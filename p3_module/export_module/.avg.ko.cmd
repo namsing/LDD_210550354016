@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p3_module/export_module/avg.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/device-drivers/native/p3_module/export_module/avg.ko /home/pi/device-drivers/native/p3_module/export_module/avg.o /home/pi/device-drivers/native/p3_module/export_module/avg.mod.o;  true

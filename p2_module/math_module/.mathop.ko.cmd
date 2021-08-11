@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p2_module/math_module/mathop.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/device-drivers/native/p2_module/math_module/mathop.ko /home/pi/device-drivers/native/p2_module/math_module/mathop.o /home/pi/device-drivers/native/p2_module/math_module/mathop.mod.o;  true

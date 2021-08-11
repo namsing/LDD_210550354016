@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p2_module/param_module/modules.order := {   echo /home/pi/device-drivers/native/p2_module/param_module/param.ko; :; } | awk '!x[$$0]++' - > /home/pi/device-drivers/native/p2_module/param_module/modules.order

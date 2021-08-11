@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p3_module/export_module/avg.mod := { echo  /home/pi/device-drivers/native/p3_module/export_module/avg.o;  echo; } > /home/pi/device-drivers/native/p3_module/export_module/avg.mod

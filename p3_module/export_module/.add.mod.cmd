@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p3_module/export_module/add.mod := { echo  /home/pi/device-drivers/native/p3_module/export_module/add.o;  echo; } > /home/pi/device-drivers/native/p3_module/export_module/add.mod
