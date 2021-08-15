@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p3_module/chardriv/chardev.mod := { echo  /home/pi/device-drivers/native/p3_module/chardriv/chardev.o;  echo; } > /home/pi/device-drivers/native/p3_module/chardriv/chardev.mod

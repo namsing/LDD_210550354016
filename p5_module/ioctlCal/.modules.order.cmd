@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p5_module/ioctlCal/modules.order := {   echo /home/pi/device-drivers/native/p5_module/ioctlCal/chardev.ko; :; } | awk '!x[$$0]++' - > /home/pi/device-drivers/native/p5_module/ioctlCal/modules.order

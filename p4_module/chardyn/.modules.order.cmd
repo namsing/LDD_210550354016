@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p3_module/chardyn/modules.order := {   echo /home/pi/device-drivers/native/p3_module/chardyn/chardev.ko; :; } | awk '!x[$$0]++' - > /home/pi/device-drivers/native/p3_module/chardyn/modules.order

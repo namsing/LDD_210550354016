@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p5_module/ioctlCal/chardev.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/device-drivers/native/p5_module/ioctlCal/chardev.ko /home/pi/device-drivers/native/p5_module/ioctlCal/chardev.o /home/pi/device-drivers/native/p5_module/ioctlCal/chardev.mod.o;  true

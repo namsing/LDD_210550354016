@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p5_module/ioctlCal/Module.symvers := sed 's/ko$$/o/' /home/pi/device-drivers/native/p5_module/ioctlCal/modules.order | scripts/mod/modpost -m -a   -o /home/pi/device-drivers/native/p5_module/ioctlCal/Module.symvers -e -i Module.symvers   -T -

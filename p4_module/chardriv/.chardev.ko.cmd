@@ -1,0 +1,1 @@
+cmd_/home/pi/device-drivers/native/p3_module/chardriv/chardev.ko := ld -r  -EL  --build-id=sha1  -T scripts/module.lds -o /home/pi/device-drivers/native/p3_module/chardriv/chardev.ko /home/pi/device-drivers/native/p3_module/chardriv/chardev.o /home/pi/device-drivers/native/p3_module/chardriv/chardev.mod.o;  true
