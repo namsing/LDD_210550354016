@@ -19,39 +19,88 @@ ssize_t Write_sub(struct file *filp, const char __user *Ubuff, size_t count, lof
 ssize_t Write_mul(struct file *filp, const char __user *Ubuff, size_t count, loff_t *offp);
 ssize_t Write_div(struct file *filp, const char __user *Ubuff, size_t count, loff_t *offp);
 
-struct file_operations fops = 
+struct file_operations fops_add = 
 {
 	.owner = THIS_MODULE,
 	.open = NAME_open,
 	.release = NAME_release,
+	.read = Read_add,
+	.write = Write_add,
 };
 
-struct cdev *my_cdev;
+struct file_operations fops_sub =
+{
+
+	.owner = THIS_MODULE,
+	.open = NAME_open,
+	.release = NAME_release,
+	.read = Read_sub,
+	.write = Write_sub,
+}
+struct file_operations fops_mul = 
+{
+
+	.owner = THIS_MODULE,
+	.open = NAME_open,
+	.release = NAME_release,
+	.read = Read_mul,
+	.write = Write_mul,
+}
+struct file_operations fops_div = 
+{
+
+	.owner = THIS_MODULE,
+	.open = NAME_open,
+	.release = NAME_release,
+	.read = Read_div,
+	.write = Write_div,
+}
 
 
+struct cdev *addDev;
+struct cdev *subDev;
+struct cdev *mulDev;
+struct cdev *divDev;
+
+int result_add,result_sub,result_mul,result_div;
+
+
+int result1,result2,result3,result4;
 static int __init chardev_init(void)
 {
-	int result1,result2,result3,result4;
 	int major,minor;
-	dev_t Mydev,SubDev,MulDev,DivDev;
-	Mydev = MKDEV(258,0);
-	//SubDev = MKDEV(258,1);
-	//MulDev = MKDEV(258,2);
-	//DivDev = MKDEV(258,3);
-	result = register_chrdev_region(Mydev,4,"Mydev");
-//	result2 = register_chrdev_region(SubDev,1,"SubDev");
-//	result3 = register_chrdev_region(MulDev,1,"MulDev");
-//	result4 = register_chrdev_region(DivDev,1,"DivDev");
-	if(result<0)
+	dev_t Adddev,SubDev,MulDev,DivDev;
+	AddDev = MKDEV(258,0);
+	SubDev = MKDEV(258,1);
+	MulDev = MKDEV(258,2);
+	DivDev = MKDEV(258,3);
+	result1 = register_chrdev_region(AddDev,1,"Adddev");
+	result2 = register_chrdev_region(SubDev,1,"SubDev");
+	result3 = register_chrdev_region(MulDev,1,"MulDev");
+	result4 = register_chrdev_region(DivDev,1,"DivDev");
+	if(result1<0||result2<0||result3<0||result4<0)
 	{
 		printk("\nError allocation region");
 		return(-1);
 	}
-	my_cdev = cdev_alloc();
-	my_cdev->ops = &fops;
+	addDev = cdev_alloc();
+	addDev->ops = &fops_add;
 
-	result = cdev_add(my_cdev,Mydev,4);
-	if(result<0)
+
+	subDev = cdev_alloc();
+	subDev->ops = &fops_sub;
+
+	mulDev = cdev_alloc();
+	mulDev->ops = &fops_mul;
+
+	divDev = cdev_alloc();
+	divDev->ops = &fops_div;
+
+	result1 = cdev_add(addDev,AddDev,1);
+	result2 = cdev_add(subDev,SubDev,1);
+	result3 = cdev_add(mulDev,MulDev,1);
+	result4 = cdev_add(divDev,DivDev,1);
+	if(result1<0||result2<0||result3<0||result4<0)
 	{
 		printk("\nerror");
 		unregister_chrdev_region(Mydev,4);
@@ -63,44 +112,21 @@ static int __init chardev_init(void)
 
 void __exit chardev_exit(void)
 {
-	dev_t Mydev;
-	int MAJOR, MINOR;
-	Mydev = MKDEV(258,0);
-	MAJOR = MAJOR(Mydev);
-	MINOR = MINOR(Mydev);
-	printk("\nThe major is %d, and minor is %d",MAJOR,MINOR);
-	unregister_chrdev_region(Mydev,4);
-	cdev_del(my_cdev);
 	printk("\nUnregistered");
-	
+	cdev_del(addDev);	
+	cdev_del(subDev);	
+	cdev_del(mulDev);	
+	cdev_del(divDev);	
+	unregister_chrdev_region(AddDev,1);
+	unregister_chrdev_region(SubDev,1);
+	unregister_chrdev_region(MulDev,1);
+	unregister_chrdev_region(DivDev,1);
 	
 }
 
 int NAME_open(struct inode *inode, struct file *filp)
 {
 	printk("\nThis is an open call");
-	int minor;
-	minor = MINOR(Mydev);
-	switch(minor)
-	{
-		case 0:
-			fops.read = Read_add;
-			fops.write = Write_add;
-			break;
-		case 1:
-			fops.read = Read_sub;
-			fops.write= Write_sub;
-			break;
-		case 2:
-			fops.read = Read_mul;
-			fops.Write = Write_mul;
-			break;
-		case 3:
-			fops.read = read_div;
-			fops.write = Write_div;
-			break;
-	}
-
 	return 0;
 }
 
@@ -113,11 +139,10 @@ int NAME_release(struct inode *inode, struct file *filp)
 
 ssize_t Read_add(struct file *filp, char __user *Ubuff, size_t count, loff_t *offp)
 {
-	char Kbuff[100] = "This is the data sent to device";
 	ssize_t ret;
 	unsigned long remaining
 	printk("\nread command called :");
-	remaining = copy_to_user((char *)Ubuff,(char *)Kbuff,count);
+	remaining = copy_to_user((char *)Ubuff,&result_add,count);
 
 	if(remaining == 0)
 	{
@@ -141,19 +166,101 @@ ssize_t Read_add(struct file *filp, char __user *Ubuff, size_t count, loff_t *of
 
 
 
-
-
-
-ssize_t NAME_write(struct file *filp, const char __user *Ubuff, size_t count, loff_t *offp)
+ssize_t Read_sub(struct file *filp, char __user *Ubuff, size_t count, loff_t *offp)
 {
-	char Kbuff[100];
+	char Kbuff[100] = "This is the data sent to device";
+	ssize_t ret;
+	unsigned long remaining
+	printk("\nread command called :");
+
+	remaining = copy_to_user((char *)Ubuff,&result_sub,count);
+	if(remaining == 0)
+	{
+		printk("\ndata succesfully copied");
+		return count;
+	}
+	else if(remaining>0)
+	{
+		printk("data still remaining to be read");
+		return (count - remaining);
+	}
+	else
+	{
+		printk("\n error reading data\n");
+		ret = -EFAULT;
+		return ret;
+	}
+	return 0;
+}
+
+
+ssize_t Read_mul(struct file *filp, char __user *Ubuff, size_t count, loff_t *offp)
+{
+	char Kbuff[100] = "This is the data sent to device";
+	ssize_t ret;
+	unsigned long remaining
+	printk("\nread command called :");
+
+	remaining = copy_to_user((char *)Ubuff,&result_mul,count);
+	if(remaining == 0)
+	{
+		printk("\ndata succesfully copied");
+		return count;
+	}
+	else if(remaining>0)
+	{
+		printk("data still remaining to be read");
+		return (count - remaining);
+	}
+	else
+	{
+		printk("\n error reading data\n");
+		ret = -EFAULT;
+		return ret;
+	}
+	return 0;
+}
+
+
+ssize_t Read_div(struct file *filp, char __user *Ubuff, size_t count, loff_t *offp)
+{
+	char Kbuff[100] = "This is the data sent to device";
+	ssize_t ret;
+	unsigned long remaining
+	printk("\nread command called :");
+
+	remaining = copy_to_user((char *)Ubuff,&result_div,count);
+	if(remaining == 0)
+	{
+		printk("\ndata succesfully copied");
+		return count;
+	}
+	else if(remaining>0)
+	{
+		printk("data still remaining to be read");
+		return (count - remaining);
+	}
+	else
+	{
+		printk("\n error reading data\n");
+		ret = -EFAULT;
+		return ret;
+	}
+	return 0;
+}
+ssize_t Write_add(struct file *filp, const char __user *Ubuff, size_t count, loff_t *offp)
+{
+	int Kbuff[2],result;
 	unsigned long remaining;
 	ssize_t ret;
 	printk("\nwriting data: \n");
 	remaining = copy_from_user((char *)Kbuff,(char *)Ubuff,count);
 	if(remaining == 0)
 	{
-		printk("data successfully read from user : %s",Ubuff);
+		printk("data successfully read from user : \n");
+		result_add = (int)Kbuff[0]+(int)Kbuff[1];
+
+
 		return count;
 	}
 	else if(remaining>0)
@@ -170,6 +277,94 @@ ssize_t NAME_write(struct file *filp, const char __user *Ubuff, size_t count, lo
 	
 	return 0;
 }
+ssize_t Write_sub(struct file *filp, const char __user *Ubuff, size_t count, loff_t *offp)
+{
+	char Kbuff[100];
+	unsigned long remaining;
+	ssize_t ret;
+	printk("\nwriting data: \n");
+	remaining = copy_from_user((char *)Kbuff,(char *)Ubuff,count);
+	if(remaining == 0)
+	{
+		printk("data successfully read from user : \n");
+		result_sub = (int)Kbuff[0]-(int)Kbuff[1];
+
+
+		return count;
+	}
+	else if(remaining>0)
+	{
+		printk("data partially read from user : %s",Kbuff);
+		return (count-remaining);
+	}
+	else
+	{
+		printk("error writing data\n");
+		ret = -EFAULT;
+		return ret;
+	}
+	
+	return 0;
+}
+ssize_t Write_mul(struct file *filp, const char __user *Ubuff, size_t count, loff_t *offp)
+{
+	char Kbuff[100];
+	unsigned long remaining;
+	ssize_t ret;
+	printk("\nwriting data: \n");
+	remaining = copy_from_user((char *)Kbuff,(char *)Ubuff,count);
+	if(remaining == 0)
+	{
+		printk("data successfully read from user : \n");
+		result_mul = (int)Kbuff[0]*(int)Kbuff[1];
+
+		return count;
+	}
+	else if(remaining>0)
+	{
+		printk("data partially read from user : %s",Kbuff);
+		return (count-remaining);
+	}
+	else
+	{
+		printk("error writing data\n");
+		ret = -EFAULT;
+		return ret;
+	}
+	
+	return 0;
+}
+
+
+ssize_t Write_div(struct file *filp, const char __user *Ubuff, size_t count, loff_t *offp)
+{
+	char Kbuff[100];
+	unsigned long remaining;
+	ssize_t ret;
+	printk("\nwriting data: \n");
+	remaining = copy_from_user((char *)Kbuff,(char *)Ubuff,count);
+	if(remaining == 0)
+	{
+		printk("data successfully read from user : \n");
+		result_div = (int)Kbuff[0]/(int)Kbuff[1];
+		return count;
+	}
+	else if(remaining>0)
+	{
+		printk("data partially read from user : %s",Kbuff);
+		return (count-remaining);
+	}
+	else
+	{
+		printk("error writing data\n");
+		ret = -EFAULT;
+		return ret;
+	}
+	
+	return 0;
+}
+
+
 
 module_init(chardev_init);
 module_exit(chardev_exit);
